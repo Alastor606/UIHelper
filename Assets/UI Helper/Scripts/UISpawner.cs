@@ -4,6 +4,7 @@
 namespace UIHelper
 {
     using UnityEditor;
+    using UnityEditor.SceneManagement;
     using UnityEngine;
 
     public class UISpawner
@@ -17,44 +18,47 @@ namespace UIHelper
 
                 if (prefab != null)
                 {
-                    Object.Instantiate(prefab, item.transform);
+                    PrefabUtility.InstantiatePrefab(prefab, item.transform);
                     break;
                 }
-
             }
+            PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+            EditorSceneManager.MarkSceneDirty(prefabStage == null
+                ? UnityEngine.SceneManagement.SceneManager.GetActiveScene()
+                : prefabStage.scene);
         }
 
-        [MenuItem("UI Helper/Custom Button")]
+        [MenuItem("Custom UI/Button")]
         public static void SpawnButton()
         {
-            var prefab = Resources.FindObjectsOfTypeAll(typeof(CustomButton))[0];
+            var prefab = AssetDatabase.LoadAssetAtPath<CustomButton>("Assets/UI Helper/Prefabs/CustomButton.prefab");
             if (Selection.gameObjects.Length < 1)
             {
-                Object.Instantiate(prefab);
+                PrefabUtility.InstantiatePrefab(prefab);
                 return;
             }
             Spawn(prefab);
         }
 
-        [MenuItem("UI Helper/RadioButton")]
+        [MenuItem("Custom UI/RadioButton")]
         public static void SpawnRadioButton()
         {
-            var prefab = Resources.FindObjectsOfTypeAll(typeof(RadioButton))[0];
+            var prefab = AssetDatabase.LoadAssetAtPath<RadioButton>("Assets/UI Helper/Prefabs/RadioButton.prefab");
             if (Selection.gameObjects.Length < 1)
             {
-                Object.Instantiate(prefab);
+                PrefabUtility.InstantiatePrefab(prefab);
                 return;
             }
             Spawn(prefab);
         }
 
-        [MenuItem("UI Helper/Radio Group")]
+        [MenuItem("Custom UI/Radio Group")]
         public static void SpawRadioGroup()
         {
-            var prefab = Resources.FindObjectsOfTypeAll(typeof(RadioGroup))[0];
+            var prefab = AssetDatabase.LoadAssetAtPath<RadioGroup>("Assets/UI Helper/Prefabs/Radio Group.prefab");
             if (Selection.gameObjects.Length < 1)
-            {
-                Object.Instantiate(prefab);
+            { 
+                PrefabUtility.InstantiatePrefab(prefab);
                 return;
             }
             Spawn(prefab);

@@ -12,8 +12,7 @@ namespace UIHelper
         [field: SerializeField] public bool IsOn { get; private set; }
         [SerializeField, Space(2)] private Image _image;
         [SerializeField] private Sprite _activatedImage;
-        public UnityEvent OnTrue, OnFalse;
-
+        public UnityEvent Checked, UnChecked;
         private Sprite _currentImage;
         
         private void Awake() =>
@@ -41,16 +40,14 @@ namespace UIHelper
             if (IsOn)
             {
                 _image.sprite = _activatedImage;
-                OnTrue?.Invoke();
+                Checked?.Invoke();
             }
             else
             {
                 _image.sprite = _currentImage;
-                OnFalse?.Invoke();
+                UnChecked?.Invoke();
             }
         }
-
-
     }
 }
 
