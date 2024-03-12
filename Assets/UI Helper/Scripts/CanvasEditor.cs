@@ -12,7 +12,8 @@ namespace UIHelper
         private float _math;
         GUIStyle labelStyle;
 
-        [MenuItem("Change UI/Canvas")]
+
+        [MenuItem("UI Helper/Edit Canvas")]
         public static void ShowWindow()
         {
             var window = GetWindow<CanvasEditor>("Font Changer");
