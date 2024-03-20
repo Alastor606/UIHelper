@@ -2,6 +2,7 @@
 namespace UIHelper
 {
     using System.IO;
+    using TMPro;
     using UnityEditor;
     using UnityEngine;
     using UnityEngine.U2D;
@@ -27,6 +28,7 @@ namespace UIHelper
 
         private void OnGUI()
         {
+            EditorGUILayout.LabelField("Generate Gradient", new GUIStyle(EditorStyles.boldLabel));
             startColor = EditorGUILayout.ColorField(startColor);
             endColor = EditorGUILayout.ColorField(endColor);
             width = EditorGUILayout.IntField("Width", width);
@@ -42,8 +44,41 @@ namespace UIHelper
             if (GUILayout.Button("Swap Colors")) SwapColors();
             if (GUILayout.Button("Save Texture")) Save();
             GUILayout.EndHorizontal();
-            GUI.DrawTexture(new Rect(10, 150, 40, 40), GetTexture());
+            GUILayout.Space(5);
+            GUILayout.Label("Copy colors from selected image");
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Copy horizontal gradient")) CopyGradientHorizontal();
+            if (GUILayout.Button("Copy vertical gradient")) CopyGradientVertical();
+            GUILayout.EndHorizontal();
+
+            GUI.DrawTexture(new Rect(10, 250, 60, 60), GetTexture());
             
+        }
+
+        private void CopyGradientHorizontal()
+        {
+            var selectedObj = Selection.activeGameObject;
+            if(selectedObj.TryGetComponent(out Image img))
+            {
+                _horizontal = true;
+                _vertical = false;
+                var texture = img.sprite.texture;
+                startColor = texture.GetPixel(0, 0);
+                endColor = texture.GetPixel(texture.width - 1, 0);
+            }
+        }
+
+        private void CopyGradientVertical()
+        {
+            var selectedObj = Selection.activeGameObject;
+            if (selectedObj.TryGetComponent(out Image img))
+            {
+                _vertical = true;
+                _horizontal = false;
+                var texture = img.sprite.texture;
+                startColor = texture.GetPixel(0, texture.height - 1);
+                endColor = texture.GetPixel(0, 0);
+            }
         }
 
         private void Save()
@@ -71,6 +106,11 @@ namespace UIHelper
             foreach(var item in Selection.gameObjects)
             {
                 if(item.TryGetComponent(out Image img)) img.sprite = Sprite.Create(GetTexture(), new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f));
+                if(item.TryGetComponent(out TMP_Text text))
+                {
+                    text.enableVertexGradient = true;
+                    text.colorGradient = _horizontal == true ? new VertexGradient(startColor, endColor, startColor, endColor) : new VertexGradient(startColor, startColor, endColor, endColor);
+                }
             }
         }
 

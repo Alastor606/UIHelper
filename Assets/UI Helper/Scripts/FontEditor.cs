@@ -72,9 +72,35 @@ namespace UIHelper
             {
                 if (_asset != null) item.font = _asset;
                 if (_color != default) item.color = _color;
-                item.fontStyle = FontStyles.Bold;
-                
+
+                if (item.enableAutoSizing)
+                {
+                    item.autoSizeTextContainer = true;
+                    item.enableAutoSizing = true;
+                    item.fontSizeMax = _size;
+                }
+                else item.fontSize = _size;
+                SetStyle(item);
+                item.GraphicUpdateComplete();
             }
+        }
+
+        private void SetStyle(TMP_Text item)
+        {
+            if (_bold) item.fontStyle |= FontStyles.Bold;
+            else item.fontStyle &= ~FontStyles.Bold;
+            if (_italic) item.fontStyle |= FontStyles.Italic;
+            else item.fontStyle &= ~FontStyles.Italic;
+            if (_underfine) item.fontStyle |= FontStyles.Underline;
+            else item.fontStyle &= ~FontStyles.Underline;
+            if (_striketrouth) item.fontStyle |= FontStyles.Strikethrough;
+            else item.fontStyle &= ~FontStyles.Strikethrough;
+            if (_lower) item.fontStyle |= FontStyles.LowerCase;
+            else item.fontStyle &= ~FontStyles.LowerCase;
+            if (_upper) item.fontStyle |= FontStyles.UpperCase;
+            else item.fontStyle &= ~FontStyles.UpperCase;
+            if (_smallcaps) item.fontStyle |= FontStyles.SmallCaps;
+            else item.fontStyle &= ~FontStyles.SmallCaps;
         }
     }
 }

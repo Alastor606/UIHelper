@@ -9,7 +9,7 @@ namespace UIHelper
     public class CopyComponents : EditorWindow
     {
         private GameObject _currentObject;
-        private bool _withPosition = false;
+        private static bool _withPosition = false;
         private GUIStyle _labelStyle = new (), _microLabel = new();
 
         [MenuItem("UI Helper/Copy components")]
@@ -30,87 +30,55 @@ namespace UIHelper
 
             if (_currentObject != null) GUILayout.Label("Current object name : " + _currentObject.name, _microLabel);
 
-            if (GUILayout.Button("Copy components from selected")) Copy();
-            if (GUILayout.Button("Copy values from selected")) CopyValues();
-            if (GUILayout.Button("Create full copy from selected")) FullCopy();
+            if (GUILayout.Button("Copy components from selected")) Copy(_currentObject, Selection.activeGameObject);
+            if (GUILayout.Button("Copy values from selected")) CopyValues(_currentObject, Selection.activeGameObject);
+            if (GUILayout.Button("Create full copy from selected")) ;
             GUILayout.Space(10);
             _withPosition = RadioButton.Draw("Copy position", _withPosition);
         }
 
-        [MenuItem("GameObject/UI Helper/Functions/Copy Object %q", false, -1)]
+        [MenuItem("GameObject/UI Helper/Functions/CopyObject %q", false, -1)]
         private static void FullCopy()
         {
-            var selectedObjet = Selection.activeGameObject;
-            var mainObj = CopyObj(selectedObjet.transform);
-            if (selectedObjet.transform.parent != null) mainObj.transform.SetParent(selectedObjet.transform.parent);
-            if (selectedObjet.transform.childCount < 1) return;
-
-            CopyChild(selectedObjet.transform, mainObj.transform);
-            mainObj.transform.position = selectedObjet.transform.position;
-
-            Selection.activeGameObject = mainObj;
-        }
-
-        private static void CopyChild(Transform parent, Transform copyTo)
-        {
-            if(parent == null || parent.childCount <= 0) return;
-            foreach (Transform item in parent.transform)
+            var selectedObj = Selection.activeGameObject;
+            var obj = new GameObject("C" + selectedObj.name);
+            if(selectedObj.transform.parent != null) obj.transform.SetParent(selectedObj.transform.parent);
+            Copy(obj, selectedObj);
+            CopyValues(obj, selectedObj);
+            if (selectedObj.transform.childCount > 0)
             {
-                var obj = CopyObj(item);
-                obj.transform.SetParent(copyTo.transform);
-                CopyChild(item, obj.transform);
+                foreach (Transform item in selectedObj.transform) CopyChild(item.gameObject, obj.transform);
             }
         }
+
+        private static void CopyChild(GameObject copyFrom, Transform parent)
+        {
+            var obj = new GameObject("C" + copyFrom.name);
+            obj.transform.SetParent(parent);
+            Copy(obj, copyFrom);
+            CopyValues(obj, copyFrom);
+            if (copyFrom.transform.childCount > 0)
+            {
+                foreach (Transform item in copyFrom.transform) CopyChild(item.gameObject, obj.transform);
+            }
+        }
+
 
         [MenuItem("GameObject/UI Helper/Functions/CopyObject %q", true)]
         static bool ValidateMyContextFunction() =>
             Selection.activeGameObject != null;
-        
-        private static GameObject CopyObj(Transform objec)
+
+        private static void CopyValues(GameObject currentObject, GameObject copyFrom)
         {
-            List<Type> cp = new();
-            foreach (Component item in objec.GetComponents<Component>()) 
-                if (item.GetType() != typeof(Transform)) cp.Add(item.GetType());
-
-            var obj = new GameObject("copyof" + objec.name, cp.ToArray());
-
-            Component[] components = objec.GetComponents<Component>();
-            if (components == null) return obj;
-
-            foreach (Component comp in components)
-            {
-                foreach (Component c in obj.GetComponentsInChildren<Component>())
-                {
-                    if (comp.GetType() != comp.GetType()) continue;
-                    ComponentUtility.CopyComponent(comp);
-                    ComponentUtility.PasteComponentValues(c);
-                } 
-            }
-
-            if(objec.TryGetComponent(out RectTransform rect)) CopySize(obj.GetComponent<RectTransform>(), rect); 
-            else
-            {
-                Vector3 size = objec.GetComponent<Renderer>().bounds.size;
-                var b = obj.GetComponent<Renderer>().bounds;
-                b.size = size;
-                obj.transform.localScale = objec.transform.localScale;
-            }
-            obj.transform.position = objec.transform.position;
-            
-            return obj;
-        }
-
-        private void CopyValues()
-        {
-            if (_currentObject == null) return;
-            Component[] components = Selection.activeGameObject.GetComponents<Component>();
+            if (currentObject == null) return;
+            Component[] components = copyFrom.GetComponents<Component>();
             if (components == null) return;
 
-            if (_withPosition) _currentObject.transform.position = components[0].transform.position;
+            if (currentObject) currentObject.transform.position = components[0].transform.position;
 
             foreach (Component comp in components)
             {
-                foreach(Component c in _currentObject.GetComponentsInChildren<Component>())
+                foreach(Component c in currentObject.GetComponentsInChildren<Component>())
                 {
                     if (comp.GetType() != comp.GetType()) continue;
                     if (c.GetType() == typeof(Transform) && !_withPosition) continue;
@@ -120,24 +88,24 @@ namespace UIHelper
             }
         }
 
-        private void Copy()
+        private static void Copy(GameObject currentObject, GameObject copyFrom)
         {
-            if (_currentObject == null) return;
-            Component[] components = Selection.activeGameObject.GetComponents<Component>();
+            if (currentObject == null) return;
+            Component[] components = copyFrom.GetComponents<Component>();
             if (components == null) return;
-            if (_withPosition) _currentObject.transform.position = components[0].transform.position;
+            if (_withPosition) currentObject.transform.position = components[0].transform.position;
 
 
             foreach (Component comp in components)
             {
-                if (ComponentExistsInChildren(comp, _currentObject)) continue;
+                if (ComponentExistsInChildren(comp, currentObject)) continue;
 
                 ComponentUtility.CopyComponent(comp);
-                ComponentUtility.PasteComponentAsNew(_currentObject);
+                ComponentUtility.PasteComponentAsNew(currentObject);
             }
         }
 
-        private bool ComponentExistsInChildren(Component comp, GameObject target)
+        private static bool ComponentExistsInChildren(Component comp, GameObject target)
         {
             Component[] targetComponents = target.GetComponentsInChildren<Component>();
 
@@ -149,9 +117,5 @@ namespace UIHelper
             return false;
         }
 
-        public static void CopySize(RectTransform rect, RectTransform obj)
-        {
-            rect.ApplyRectTransformData(obj.CopyRectTransformData());
-        }
     }
 }

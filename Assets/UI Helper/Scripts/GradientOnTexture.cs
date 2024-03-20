@@ -5,6 +5,8 @@ namespace UIHelper
     using UnityEditor;
     using UnityEngine.UI;
     using Unity.VisualScripting;
+    using TMPro;
+    using static UnityEditor.Progress;
 
     public static class GradientOnTexture
     {
