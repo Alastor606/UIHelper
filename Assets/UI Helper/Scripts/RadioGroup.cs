@@ -47,11 +47,16 @@ namespace UIHelper
 
         private void CheckButtonsActive(RadioButton button, bool value)
         {
-            if (value == false) return;
+            if (value == false)
+            {
+                button.Press();
+                return;
+            }
             foreach (var radio in _buttons)
             {
                 if (radio != button) radio.Off();
             }
+           
         }
     }
 

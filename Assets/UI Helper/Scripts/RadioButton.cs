@@ -1,6 +1,7 @@
 namespace UIHelper
 {
     using System;
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.Events;
     using UnityEngine.EventSystems;
@@ -13,7 +14,8 @@ namespace UIHelper
         [SerializeField, Space(2)] private Image _image;
         [SerializeField] private Sprite _activatedImage;
         [SerializeField] private Color _checkedColor;
-        public UnityEvent Checked, UnChecked;
+        [SerializeField, Tooltip("Objects off when checked is false, and on when checked true")] private List<GameObject> _objectsToSwitch;
+        [Space(10)] public UnityEvent Checked, UnChecked;
         private Sprite _currentImage;
         private Color _currentColor;
 
@@ -46,12 +48,14 @@ namespace UIHelper
             {
                 if(_activatedImage != null)_image.sprite = _activatedImage;
                 if (_checkedColor != default) _image.color = _checkedColor;
+                if (_objectsToSwitch.Count > 0) foreach (var item in _objectsToSwitch) item.SetActive(true);
                 Checked?.Invoke();
             }
             else
             {
                 if(_currentImage != null)_image.sprite = _currentImage;
                 if (_currentColor != default) _image.color = _currentColor;
+                if (_objectsToSwitch.Count > 0) foreach (var item in _objectsToSwitch) item.SetActive(false);
                 UnChecked?.Invoke();
             }
         }

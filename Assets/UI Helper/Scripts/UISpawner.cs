@@ -46,7 +46,7 @@ namespace UIHelper
 
 
 
-        [MenuItem("GameObject/UI Helper/Button", false, 1)]
+        [MenuItem("GameObject/UI Helper/Button", false, 1)] 
         private static void SpawnButton() =>
             Spawn("Assets/UI Helper/Prefabs/CustomButton.prefab");
 

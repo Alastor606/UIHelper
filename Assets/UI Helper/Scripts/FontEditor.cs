@@ -21,7 +21,7 @@ namespace UIHelper
         [MenuItem("UI Helper/Edit Text")]
         public static void ShowWindow()
         {
-            var window = GetWindow<FontEditor>("Font Changer");
+            var window = GetWindow<FontEditor>("Font Editor");
             window.minSize = new Vector2(400, 475);
         }
 

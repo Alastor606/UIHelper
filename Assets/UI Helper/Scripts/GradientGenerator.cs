@@ -4,6 +4,7 @@ namespace UIHelper
     using System.IO;
     using UnityEditor;
     using UnityEngine;
+    using UnityEngine.U2D;
     using UnityEngine.UI;
 
     public class GradientGenerator : EditorWindow
@@ -58,8 +59,8 @@ namespace UIHelper
         private Texture2D GetTexture()
         {
             Texture2D gradientTexture;
-            if (_horizontal) gradientTexture = CreateGradientTexture();
-            else gradientTexture = CreateVerticalGradientTexture();
+            if (_horizontal) gradientTexture = CreateGradientTexture(width, height, startColor, endColor);
+            else gradientTexture = CreateVerticalGradientTexture(width, height, startColor, endColor);
             _lastTexture = gradientTexture;
             return gradientTexture;
         }
@@ -73,9 +74,9 @@ namespace UIHelper
             }
         }
 
-        private Texture2D CreateGradientTexture()
+        public static Texture2D CreateGradientTexture(int width, int height, Color startColor, Color endColor)
         {
-            Texture2D texture = new(width, height);
+            Texture2D texture = new(width, height); 
 
             for (int x = 0; x < width; x++)
             {
@@ -90,7 +91,7 @@ namespace UIHelper
             return texture;
         }
 
-        private Texture2D CreateVerticalGradientTexture()
+        public static Texture2D CreateVerticalGradientTexture(int width, int height, Color startColor, Color endColor)
         {
             Texture2D texture = new (width, height);
 
@@ -113,6 +114,7 @@ namespace UIHelper
     {
         private string _name, _message;
         private Texture2D _lastTexture;
+        private Image _selectedObject;
 
         public void GetTexture(Texture2D txt) =>_lastTexture = txt;        
 
@@ -120,21 +122,31 @@ namespace UIHelper
         {
             GUILayout.Label("Enter the filename");
             _name = GUILayout.TextField(_name);
+            GUILayout.Label("If object doesnt selected you save last created gradient");
+            _selectedObject = EditorGUILayout.ObjectField("Select object texure",_selectedObject, typeof(Image), true) as Image;
 
-            if (GUILayout.Button("Save"))
+            if (GUILayout.Button("Save lastest gradient"))
             {
-                byte[] bytes = _lastTexture.EncodeToPNG();
-                var filename = "Assets/HelperPrefabs/" + _name + ".png";
-                if (!Directory.Exists("Assets/HelperPrefabs"))Directory.CreateDirectory("Assets/HelperPrefabs");
-
-                if (!File.Exists(filename))
-                { 
-                    File.WriteAllBytes(filename, bytes);
-                    _message = "Saving..."; 
-                }
-                
+                Save(_lastTexture.EncodeToPNG());
+            }
+            if(GUILayout.Button("Save selected image sprite"))
+            {
+                Texture2D texture = _selectedObject.sprite.texture;
+                Save(texture.EncodeToPNG());
             }
             GUILayout.Label(_message);
+        }
+
+        private void Save(byte[] bytes)
+        {
+            var filename = "Assets/HelperPrefabs/" + _name + ".png";
+            if (!Directory.Exists("Assets/HelperPrefabs")) Directory.CreateDirectory("Assets/HelperPrefabs");
+
+            if (!File.Exists(filename))
+            {
+                File.WriteAllBytes(filename, bytes);
+                _message = "Saving...";
+            }
         }
 
     }

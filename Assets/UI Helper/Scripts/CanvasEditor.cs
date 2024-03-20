@@ -16,7 +16,7 @@ namespace UIHelper
         [MenuItem("UI Helper/Edit Canvas")]
         public static void ShowWindow()
         {
-            var window = GetWindow<CanvasEditor>("Font Changer");
+            var window = GetWindow<CanvasEditor>("Canvas editor");
             window.minSize = new Vector2(400, 475);
             
         }

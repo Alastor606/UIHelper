@@ -26,32 +26,7 @@ namespace UIHelper
             _microLabel.normal.textColor = Color.white;
             _labelStyle.fontSize = 20;
             _labelStyle.alignment = TextAnchor.MiddleCenter;
-            Event evt = Event.current;
-
-            Rect dropArea = GUILayoutUtility.GetRect(0.0f, 50.0f, GUILayout.ExpandWidth(true));
-            GUI.Box(dropArea, "Drag gameObject to edit here!", _labelStyle);
-
-            switch (evt.type)
-            {
-                case EventType.DragUpdated:
-                case EventType.DragPerform:
-                    if (!dropArea.Contains(evt.mousePosition))
-                        break;
-
-                    DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-
-                    if (evt.type == EventType.DragPerform)
-                    {
-                        DragAndDrop.AcceptDrag();
-
-                        foreach (var dragged in DragAndDrop.objectReferences)
-                        {
-                            if (dragged is GameObject) _currentObject = (GameObject)dragged;
-                        }
-                    }
-                    Event.current.Use();
-                    break;
-            }
+            _currentObject = EditorGUILayout.ObjectField("Select the object", _currentObject, typeof(GameObject), true) as GameObject;
 
             if (_currentObject != null) GUILayout.Label("Current object name : " + _currentObject.name, _microLabel);
 
@@ -62,22 +37,29 @@ namespace UIHelper
             _withPosition = RadioButton.Draw("Copy position", _withPosition);
         }
 
-        [MenuItem("GameObject/UI Helper/Functions/CopyObject %q", false, -1)]
+        [MenuItem("GameObject/UI Helper/Functions/Copy Object %q", false, -1)]
         private static void FullCopy()
         {
             var selectedObjet = Selection.activeGameObject;
             var mainObj = CopyObj(selectedObjet.transform);
-            if (selectedObjet.transform.parent != null) mainObj.transform.parent = selectedObjet.transform.parent;
+            if (selectedObjet.transform.parent != null) mainObj.transform.SetParent(selectedObjet.transform.parent);
             if (selectedObjet.transform.childCount < 1) return;
-            
-            foreach(Transform item in selectedObjet.transform)
-            {
-                var obj = CopyObj(item);
-                obj.transform.parent = mainObj.transform;
-            }
+
+            CopyChild(selectedObjet.transform, mainObj.transform);
             mainObj.transform.position = selectedObjet.transform.position;
 
             Selection.activeGameObject = mainObj;
+        }
+
+        private static void CopyChild(Transform parent, Transform copyTo)
+        {
+            if(parent == null || parent.childCount <= 0) return;
+            foreach (Transform item in parent.transform)
+            {
+                var obj = CopyObj(item);
+                obj.transform.SetParent(copyTo.transform);
+                CopyChild(item, obj.transform);
+            }
         }
 
         [MenuItem("GameObject/UI Helper/Functions/CopyObject %q", true)]
@@ -138,7 +120,7 @@ namespace UIHelper
             }
         }
 
-        private void Copy(params GameObject[] objects)
+        private void Copy()
         {
             if (_currentObject == null) return;
             Component[] components = Selection.activeGameObject.GetComponents<Component>();
@@ -169,23 +151,7 @@ namespace UIHelper
 
         public static void CopySize(RectTransform rect, RectTransform obj)
         {
-            rect.sizeDelta = obj.sizeDelta;
-
-            RectTransformUtility.FlipLayoutOnAxis(rect, 0, false, false);
-            RectTransformUtility.FlipLayoutOnAxis(rect, 1, false, false);
-
-            Vector3[] corners = new Vector3[4];
-            obj.GetWorldCorners(corners);
-            Vector2 size = new (Mathf.Abs(corners[2].x - corners[0].x), Mathf.Abs(corners[2].y - corners[0].y));
-            Vector3[] targetCorners = new Vector3[4];
-            rect.GetWorldCorners(targetCorners);
-            Vector2 targetSize = new (Mathf.Abs(targetCorners[2].x - targetCorners[0].x), Mathf.Abs(targetCorners[2].y - targetCorners[0].y));
-            Vector2 scale = new (size.x / targetSize.x, size.y / targetSize.y);
-
-            rect.localScale = new Vector3(scale.x, scale.y, 1f);
+            rect.ApplyRectTransformData(obj.CopyRectTransformData());
         }
     }
 }
-
-
-
