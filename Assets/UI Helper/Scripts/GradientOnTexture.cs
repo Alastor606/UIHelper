@@ -6,7 +6,6 @@ namespace UIHelper
     using UnityEngine.UI;
     using Unity.VisualScripting;
     using TMPro;
-    using static UnityEditor.Progress;
 
     public static class GradientOnTexture
     {
@@ -14,17 +13,28 @@ namespace UIHelper
         [MenuItem("GameObject/UI Helper/Functions/Random Gradient/Horizontal #2",false, 3)]
         public static void GenerateRandomGradient()
         {
-            var img = Selection.activeGameObject.GetComponent<Image>();
-            var texture = GradientGenerator.CreateGradientTexture((int)img.rectTransform.rect.width,(int)img.rectTransform.rect.height, Random.ColorHSV(), Random.ColorHSV());
-            img.sprite = Sprite.Create(texture, new Rect(0, 0, (int)img.rectTransform.rect.width, (int)img.rectTransform.rect.height), new Vector2(0.5f, 0.5f));
+            var obj = Selection.activeGameObject;
+            if(obj.TryGetComponent(out Image img))
+            {
+                var texture = GradientGenerator.CreateGradientTexture((int)img.rectTransform.rect.width, (int)img.rectTransform.rect.height, Random.ColorHSV(), Random.ColorHSV());
+                img.sprite = Sprite.Create(texture, new Rect(0, 0, (int)img.rectTransform.rect.width, (int)img.rectTransform.rect.height), new Vector2(0.5f, 0.5f));
+            }
+            else if (obj.TryGetComponent(out TMP_Text tmp)) GradientGenerator.SetTextGradient(true, tmp, Random.ColorHSV(), Random.ColorHSV());
+            
+            
         }
 
         [MenuItem("GameObject/UI Helper/Functions/Random Gradient/Vertical #1", false, 3)] 
         public static void GenerateRandomVerticalGradient()
         {
-            var img = Selection.activeGameObject.GetComponent<Image>();
-            var texture = GradientGenerator.CreateVerticalGradientTexture((int)img.rectTransform.rect.width, (int)img.rectTransform.rect.height, Random.ColorHSV(), Random.ColorHSV());
-            img.sprite = Sprite.Create(texture, new Rect(0, 0, (int)img.rectTransform.rect.width, (int)img.rectTransform.rect.height), new Vector2(0.5f, 0.5f));
+            var obj = Selection.activeGameObject;
+            if (obj.TryGetComponent(out Image img))
+            {
+                var texture = GradientGenerator.CreateVerticalGradientTexture((int)img.rectTransform.rect.width, (int)img.rectTransform.rect.height, Random.ColorHSV(), Random.ColorHSV());
+                img.sprite = Sprite.Create(texture, new Rect(0, 0, (int)img.rectTransform.rect.width, (int)img.rectTransform.rect.height), new Vector2(0.5f, 0.5f));
+            }
+            else if (obj.TryGetComponent(out TMP_Text tmp)) GradientGenerator.SetTextGradient(false, tmp, Random.ColorHSV(), Random.ColorHSV());
+            
         }
 
         [MenuItem("GameObject/UI Helper/Functions/Reverse Texture/Horizontal %w")]

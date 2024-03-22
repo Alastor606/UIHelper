@@ -1,9 +1,7 @@
-
 #if UNITY_EDITOR
 namespace UIHelper
 {
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
     using TMPro;
     using UnityEditor;
     using UnityEngine;
@@ -16,7 +14,7 @@ namespace UIHelper
         GUIStyle labelStyle;
 
         private bool _bold, _italic, _underfine, _striketrouth, _lower, _upper, _smallcaps;
-        private int _size;
+        private int _size = -1;
 
         [MenuItem("UI Helper/Edit Text")]
         public static void ShowWindow()
@@ -75,11 +73,15 @@ namespace UIHelper
 
                 if (item.enableAutoSizing)
                 {
-                    item.autoSizeTextContainer = true;
-                    item.enableAutoSizing = true;
-                    item.fontSizeMax = _size;
+                    if (_size > 0)
+                    {
+                        item.autoSizeTextContainer = true;
+                        item.enableAutoSizing = true;
+                        item.fontSizeMax = _size;
+                        item.fontSize = _size;
+                    }
                 }
-                else item.fontSize = _size;
+                else if(_size > 0)item.fontSize = _size;
                 SetStyle(item);
                 item.GraphicUpdateComplete();
             }

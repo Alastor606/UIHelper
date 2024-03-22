@@ -15,7 +15,7 @@ namespace UIHelper
         [SerializeField] private Sprite _activatedImage;
         [SerializeField] private Color _checkedColor;
         [SerializeField, Tooltip("Objects off when checked is false, and on when checked true")] private List<GameObject> _objectsToSwitch;
-        [Space(10)] public UnityEvent Checked, UnChecked;
+        [Space(10)] public UnityEvent Checked, UnChecked, OnClick;
         private Sprite _currentImage;
         private Color _currentColor;
 
@@ -33,6 +33,7 @@ namespace UIHelper
             IsOn = !IsOn;
             Render();
             OnValueChanged?.Invoke(this, IsOn);
+            OnClick?.Invoke();
         }
 
         public void Off()

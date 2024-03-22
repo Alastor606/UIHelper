@@ -17,7 +17,7 @@ namespace UIHelper
         [SerializeField, HideInInspector] private Color _startColor, _endColor;
         [HideInInspector]public bool isScaleable, isColorable;
         [SerializeField, Tooltip("Objects to set Active, or change enabled of canvas")] private List<GameObject> _off, _on;
-        [SerializeField, Space(15)] private UnityEvent _onClick;
+        [Space(15)] public UnityEvent onClick;
         private Image _image;
         private bool _stopScale = false, _stopUnscale = false, _stopChangeColor = false, _stopResetColor = false;
         private Vector2 _mainScale;
@@ -41,7 +41,7 @@ namespace UIHelper
                 if (item.TryGetComponent(out Canvas c)) c.enabled = true;
                 else item.gameObject.SetActive(true);
             }
-            _onClick?.Invoke();
+            onClick?.Invoke();
         }
          
         public void OnPointerEnter(PointerEventData eventData)

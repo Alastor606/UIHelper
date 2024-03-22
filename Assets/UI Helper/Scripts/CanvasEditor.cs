@@ -8,10 +8,11 @@ namespace UIHelper
 
     public class CanvasEditor : EditorWindow
     {
+        private string[] _resolutions = new string[] { "Default","1920x1080", "1280x720", "1366x768" };
+        private int _selectedIndex, _previousIndex;
         private float _width, _height;
         private float _math;
         GUIStyle labelStyle;
-
 
         [MenuItem("UI Helper/Edit Canvas")]
         public static void ShowWindow()
@@ -31,12 +32,9 @@ namespace UIHelper
             }
             EditorGUILayout.LabelField("Set Reference resolution", labelStyle);
             
-            _width = EditorGUILayout.FloatField("Width", _width);
-            _height = EditorGUILayout.FloatField("Height", _height);
-            _math = EditorGUILayout.FloatField("Match",_math);
-            _width = Mathf.Clamp(_width, 0, 2000);
-            _height = Mathf.Clamp(_height, 0, 2000);
-            _math = Mathf.Clamp(_math, 0, 1);
+            _width = EditorGUILayout.Slider("Width", _width,0,2000);
+            _height = EditorGUILayout.Slider("Height", _height,0,2000);
+            _math = EditorGUILayout.Slider("Match",_math, 0, 1);
             if (GUILayout.Button("Set custom Scale for all"))
             {
                 foreach (var item in Resources.FindObjectsOfTypeAll<CanvasScaler>())
@@ -57,6 +55,8 @@ namespace UIHelper
                     scale.matchWidthOrHeight = _math;
                 }
             }
+            GUILayout.Label("Select resolution");
+            _selectedIndex = EditorGUILayout.Popup(_selectedIndex, _resolutions);
             EditorGUILayout.Space(25);
             EditorGUILayout.LabelField("Automatic scale sets to all canvases on scene", labelStyle);
             if (GUILayout.Button("Auto Mobile Scale"))
@@ -78,12 +78,37 @@ namespace UIHelper
                     item.matchWidthOrHeight = 0.5f;
                 }
             }
+
+            ApplyResolution();
+        }
+
+        private void ApplyResolution()
+        {
+            if (_selectedIndex == _previousIndex) return;
+            switch (_selectedIndex)
+            {
+                case 1:
+                    _width = 1920;
+                    _height = 1080;
+                    break;
+                 case 2:
+                    _width = 1280;
+                    _height = 720;
+                    break;
+                case 3:
+                    _width = 1366;
+                    _height = 768;
+                    break;
+            }
+            _previousIndex = _selectedIndex;
         }
 
         private void SetSettings(CanvasScaler item)
         {
             item.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             item.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            item.GetComponent<Canvas>().vertexColorAlwaysGammaSpace = true;
+            item.GetComponent<Canvas>().pixelPerfect = true;
         }
     }
 }

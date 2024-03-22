@@ -1,7 +1,5 @@
 namespace UIHelper
 {
-    using System;
-    using System.Collections.Generic;
     using UnityEditor;
     using UnityEditorInternal;
     using UnityEngine;
@@ -32,7 +30,7 @@ namespace UIHelper
 
             if (GUILayout.Button("Copy components from selected")) Copy(_currentObject, Selection.activeGameObject);
             if (GUILayout.Button("Copy values from selected")) CopyValues(_currentObject, Selection.activeGameObject);
-            if (GUILayout.Button("Create full copy from selected")) ;
+            if (GUILayout.Button("Create full copy from selected (ctrl + q)")) FullCopy();
             GUILayout.Space(10);
             _withPosition = RadioButton.Draw("Copy position", _withPosition);
         }
