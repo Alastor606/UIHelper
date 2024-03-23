@@ -46,7 +46,13 @@ Use the inspector buttons to add radio button to container, or clear the list an
 ![image](https://github.com/Alastor606/Unity-UI-Tools/assets/114815838/94cd5ec2-91c4-434b-9376-c977336651b7)
 ## Scroll view 
 Its a default scroll view with prepared settings, just for comfort.
-
+## ***Hot keys***
+- ctrl + q : copy
+- ctrl + w : horizontal mirror image
+- ctrl + e : vertical mirror image
+- shift + 1 : random horizontal gradient
+- shift + 2 : random vertical gradient
+(Gradient works on Images & TMP_Text)
 
 
 
