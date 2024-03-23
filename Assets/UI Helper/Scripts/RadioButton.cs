@@ -19,6 +19,10 @@ namespace UIHelper
         private Sprite _currentImage;
         private Color _currentColor;
 
+        public void SetCheckedColor(Color value) => _checkedColor = value;
+        public void SetCheckedImage(Sprite value) => _activatedImage = value;
+        public void AddSwitchObject(GameObject value) => _objectsToSwitch.Add(value);
+
         public void OnPointerClick(PointerEventData eventData) =>
            Press();
 

@@ -11,14 +11,15 @@ namespace UIHelper
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
-    public class CustomButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+    public class CustomButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
     {
         [HideInInspector, SerializeField]private float _scale, _timeToScale, _changeColorTime;
         [SerializeField, HideInInspector] private Color _startColor, _endColor;
         [HideInInspector]public bool isScaleable, isColorable;
+        [SerializeField] private Color _pressedColor = new (179,179,179,255);
         [SerializeField, Tooltip("Objects to set Active, or change enabled of canvas")] private List<GameObject> _off, _on;
         [Space(15)] public UnityEvent onClick;
-        private Image _image;
+        private Image _image, _targetImage;
         private bool _stopScale = false, _stopUnscale = false, _stopChangeColor = false, _stopResetColor = false;
         private Vector2 _mainScale;
 
@@ -27,6 +28,14 @@ namespace UIHelper
             _image ??= GetComponent<Image>();
             _mainScale = transform.localScale;
             _startColor = _image.color;
+            foreach (var item in GetComponentsInChildren<Image>())
+            {
+                if (item != _image)
+                {
+                    _targetImage = item;
+                    break;
+                }
+            }
         }
            
         public void OnPointerClick(PointerEventData eventData)
@@ -136,6 +145,13 @@ namespace UIHelper
 
             transform.localScale = _mainScale;
         }
+
+        public void OnPointerDown(PointerEventData eventData) =>
+            _targetImage.color = _pressedColor;
+        
+        public void OnPointerUp(PointerEventData eventData) =>
+            _targetImage.color = Color.white;
+        
     }
 
 #if UNITY_EDITOR
