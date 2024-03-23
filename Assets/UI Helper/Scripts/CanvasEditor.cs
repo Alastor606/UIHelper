@@ -19,7 +19,6 @@ namespace UIHelper
         {
             var window = GetWindow<CanvasEditor>("Canvas editor");
             window.minSize = new Vector2(400, 475);
-            
         }
 
         private void OnGUI()
@@ -30,11 +29,14 @@ namespace UIHelper
                 labelStyle.fontSize = 16;
                 labelStyle.normal.textColor = Color.white;
             }
-            EditorGUILayout.LabelField("Set Reference resolution", labelStyle);
+            EditorGUILayout.LabelField("Canvas editor window", labelStyle);
             
             _width = EditorGUILayout.Slider("Width", _width,0,2000);
             _height = EditorGUILayout.Slider("Height", _height,0,2000);
             _math = EditorGUILayout.Slider("Match",_math, 0, 1);
+            GUILayout.Label("Or select resolution");
+            _selectedIndex = EditorGUILayout.Popup(_selectedIndex, _resolutions);
+            GUILayout.Space(10);
             if (GUILayout.Button("Set custom Scale for all"))
             {
                 foreach (var item in Resources.FindObjectsOfTypeAll<CanvasScaler>())
@@ -55,8 +57,7 @@ namespace UIHelper
                     scale.matchWidthOrHeight = _math;
                 }
             }
-            GUILayout.Label("Select resolution");
-            _selectedIndex = EditorGUILayout.Popup(_selectedIndex, _resolutions);
+           
             EditorGUILayout.Space(25);
             EditorGUILayout.LabelField("Automatic scale sets to all canvases on scene", labelStyle);
             if (GUILayout.Button("Auto Mobile Scale"))
@@ -76,8 +77,7 @@ namespace UIHelper
                     SetSettings(item);
                     item.referenceResolution = new Vector2(1920, 1080);
                     item.matchWidthOrHeight = 0.5f;
-                }
-            }
+                }            }
 
             ApplyResolution();
         }

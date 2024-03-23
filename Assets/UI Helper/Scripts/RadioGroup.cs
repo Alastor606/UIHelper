@@ -42,7 +42,17 @@ namespace UIHelper
 
         private void Awake()
         {
-            foreach (var button in _buttons) button.OnValueChanged += CheckButtonsActive;
+            var buttonsToRemove = new List<RadioButton>();
+            foreach (var button in _buttons)
+            {
+                if (button == null)
+                {
+                    buttonsToRemove.Add(button);
+                    continue;
+                }
+                button.OnValueChanged += CheckButtonsActive;
+            }
+            if (buttonsToRemove.Count > 0) foreach (var item in buttonsToRemove) _buttons.Remove(item);
         }
 
         private void CheckButtonsActive(RadioButton button, bool value)
