@@ -3,6 +3,8 @@ namespace UIHelper
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Text;
+    using TMPro;
 #if UNITY_EDITOR
     using UnityEditor;
 #endif
@@ -16,15 +18,19 @@ namespace UIHelper
         [HideInInspector, SerializeField]private float _scale, _timeToScale, _changeColorTime;
         [SerializeField, HideInInspector] private Color _startColor, _endColor;
         [HideInInspector]public bool isScaleable, isColorable;
+
         [SerializeField] private Color _pressedColor = new (179,179,179,255);
         [SerializeField, Tooltip("Objects to set Active, or change enabled of canvas")] private List<GameObject> _off, _on;
         [Space(15)] public UnityEvent onClick;
         private Image _image, _targetImage;
         private bool _stopScale = false, _stopUnscale = false, _stopChangeColor = false, _stopResetColor = false;
         private Vector2 _mainScale;
+        public TMP_Text TMP { get; private set; }
+        public string text { get { return TMP.text; } set { TMP.text = value; } }
 
         private void Awake()
         {
+            TMP ??= GetComponentInChildren<TMP_Text>();
             _image ??= GetComponent<Image>();
             _mainScale = transform.localScale;
             _startColor = _image.color;
@@ -37,7 +43,7 @@ namespace UIHelper
                 }
             }
         }
-           
+
         public void OnPointerClick(PointerEventData eventData)
         {
             foreach (var item in _off)
@@ -180,7 +186,7 @@ namespace UIHelper
             serializedObject.Update();
             var tg = (CustomButton)target;
             base.OnInspectorGUI();
-            _showDropdown = EditorGUILayout.Foldout(_showDropdown, "Additional Settings", true);
+            _showDropdown = EditorGUILayout.Foldout(_showDropdown, "Advansed Settings", true);
             if (_showDropdown)
             {
                 if (tg.isScaleable && tg.isColorable)

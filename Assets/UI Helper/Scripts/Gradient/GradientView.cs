@@ -27,7 +27,11 @@ namespace UIHelper
             Type inspectorType = Type.GetType("UnityEditor.InspectorWindow,UnityEditor.dll");
             var window = GetWindow<GradientView>("Gradient generator",new Type[] { inspectorType });
             window.minSize = new Vector2(400, 475);
-        } 
+        }
+
+        private void OnEnable() =>
+            _toDraw = GetTexture();
+        
 
         private void OnGUI()
         {
